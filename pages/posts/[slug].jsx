@@ -15,6 +15,7 @@ export default function SinglePostPage(props) {
 				<title>{props.post.title}</title>
 				<meta name='description' content={props.post.excerpt} />
 				<meta name='twitter:card' content='summary_large_image' />
+				<meta property='twitter:image' content={imagePath} />
 				<meta
 					name='twitter:creator'
 					content={twitterHandle}
