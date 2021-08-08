@@ -5,7 +5,7 @@ import PostContent from '../../components/posts/post-detail/post-content';
 import { getPostData, getPostsFiles } from '../../lib/posts-util';
 
 export default function SinglePostPage(props) {
-	const imagePath = `https://www.justin-blog-nextjs.vercel.app/images/posts/${props.post.slug}/${props.post.image}`;
+	const imagePath = `https://justin-blog-nextjs.vercel.app/images/posts/${props.post.slug}/${props.post.image}`;
 	const twitterHandle = '@jelmore1674';
 	const currentURL = `https://blog.justinelmore.dev/posts/${props.post.slug}`;
 	const siteName = 'Justin Elmore Blog';
