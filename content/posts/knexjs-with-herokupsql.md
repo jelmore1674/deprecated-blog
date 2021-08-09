@@ -1,7 +1,7 @@
 ---
 title: Using KnexJS With HerokuPostgres
 excerpt:
-    When working on a NodeJS project working with an ***SQL*** database can be a
+    When working on a NodeJS project working with an SQL database can be a
     little tricky. There are several options to be able to build SQL queries.
     You have ORM's such as...
 image: knexjs-with-herokupsql.png
