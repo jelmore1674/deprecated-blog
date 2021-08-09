@@ -10,8 +10,9 @@ function MyApp({ Component, pageProps }) {
 					name='viewport'
 					content='width=device-width, initial-scale=1.0'
 				/>
-			</Head>
-			<Component {...pageProps} />
+				<link rel='icon' href='/favicon.png' />
+			</Head>{' '}
+			<Component {...pageProps} />{' '}
 		</Layout>
 	);
 }

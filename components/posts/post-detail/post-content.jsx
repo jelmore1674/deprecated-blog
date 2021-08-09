@@ -12,14 +12,19 @@ import docker from 'react-syntax-highlighter/dist/cjs/languages/prism/docker';
 import ts from 'react-syntax-highlighter/dist/cjs/languages/prism/typescript';
 import sass from 'react-syntax-highlighter/dist/cjs/languages/prism/sass';
 import yml from 'react-syntax-highlighter/dist/cjs/languages/prism/yaml';
+import sql from 'react-syntax-highlighter/dist/cjs/languages/prism/sql';
+import Link from 'next/link';
+import json from 'react-syntax-highlighter/dist/cjs/languages/prism/json';
 
 SyntaxHighlighter.registerLanguage('js', js);
 SyntaxHighlighter.registerLanguage('css', css);
 SyntaxHighlighter.registerLanguage('jsx', jsx);
+SyntaxHighlighter.registerLanguage('json', json);
 SyntaxHighlighter.registerLanguage('bash', bash);
 SyntaxHighlighter.registerLanguage('docker', docker);
 SyntaxHighlighter.registerLanguage('ts', ts);
 SyntaxHighlighter.registerLanguage('sass', sass);
+SyntaxHighlighter.registerLanguage('sql', sql);
 SyntaxHighlighter.registerLanguage('yml', yml);
 
 export default function PostContent(props) {
@@ -40,14 +45,22 @@ export default function PostContent(props) {
 			if (node.children[0].tagName === 'img') {
 				const image = node.children[0];
 				return (
-					<div className={classes.image}>
-						<Image
-							src={`/images/posts/${props.post.slug}/${image.properties.src}`}
-							alt={image.alt}
-							width={600}
-							height={300}
-						/>
-					</div>
+					<Link
+						href={`/images/posts/${props.post.slug}/${image.properties.src}`}>
+						<a
+							rel='noreferrer'
+							href={`/images/posts/${props.post.slug}/${image.properties.src}`}
+							target='_blank'>
+							<div className={classes.image}>
+								<Image
+									src={`/images/posts/${props.post.slug}/${image.properties.src}`}
+									alt={image.alt}
+									width={600}
+									height={300}
+								/>
+							</div>
+						</a>
+					</Link>
 				);
 			}
 
