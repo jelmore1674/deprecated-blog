@@ -44,7 +44,7 @@ Following the prompts we now have node in our project. Now, lets install some of
 our dependencies.
 
 ```bash
-npm install express cors
+npm install express cors pg knex
 ```
 
 Now that we have our dependencies lets setup up our node server, lets set up our
@@ -92,7 +92,7 @@ app.listen(5000, () => {
 Now if you run the command `node server.js ` and go to `http://localhost:5000/`
 You should see "Server is working!" in the browser.
 
-[insert image here]
+![node-is-working](node-is-working.png)
 
 Now lets create some dummy data. This is how I want to the post object to be.
 However, you can create whatever.
@@ -168,7 +168,7 @@ npm start
 Then you should navigate to `http:localhost:3000/` and you will see the react
 homepage.
 
-[insert image here]
+![cra-homepage](cra-homepage.png)
 
 Now inside of our react app, in the app.js file lets use the React useEffect
 hook to get our dummy data displayed on the home page.
@@ -225,13 +225,13 @@ files.
 
 ```bash
 mkdir seed tables
-touch Dockerfile deploy_schemas.sql seed/seed.sql tables/tables.sql
+touch Dockerfile deploy_schemas.sql seed/seed.sql tables/posts.sql
 ```
 
 Now inside of our editor let navigate to our Posgres folder and lets create our
 table first. Lets look at our dummy data from earlier. It had the properties
-`title`,`content`, and `date`. So our SQL should have that. So in our tables.sql
-lets build our table.
+`title`,`content`, and `date`. So our SQL should have that. So in our
+`posts.sql` file. Lets build our table.
 
 ```sql
 BEGIN TRANSACTION;
@@ -257,3 +257,135 @@ INSERT INTO posts (title,content,post_date) VALUES('TS is better', 'While workin
 
 COMMIT;
 ```
+
+Now that we have seed our tables, lets go to our `deploy_schemas` file and put
+some set it up so we can deploy our schemas.
+
+```sql
+\i '/docker-entrypoint-initdb.d/tables/posts.sql'
+\i '/docker-entrypoint-initdb.d/seed/seed.sql'
+```
+
+Now that is set up let's create our `Dockerfile` for Postgres.
+
+```docker
+FROM postgres:latest
+
+ADD /tables/ /docker-entrypoint-initdb.d/tables/
+ADD /seed/ /docker-entrypoint-initdb.d/seed/
+ADD deploy_schemas.sql /docker-entrypoint-initdb.d/
+```
+
+### Docker Compose Configuration
+
+Now that our `Dockerfile` for our `client`,`server`, and `postgres` are all set
+up let's `cd` to the root of our project and create a new file called
+`docker-compose.yml`. Now let's build our docker compose in the root of our
+project.
+
+```yml
+version: '3.3'
+services:
+    # FrontEnd React
+    web:
+        container_name: client
+        build: ./client
+        working_dir: /app/client
+        command: npm start
+        ports:
+            - 3500:3000
+        volumes:
+            - ./client:/app/client
+        networks:
+            - pernapp
+    # Node Backend
+    backend:
+        container_name: backend
+        build: ./server
+        working_dir: /app/server
+        command: npm start
+        ports:
+            - 5000:5000
+        environment:
+            POSTGRES_URI: postgres://user:pass@postgres:5432/personal-journal
+        volumes:
+            - ./server:/app/server
+            - /app/server/node_modules/
+        networks:
+            - pernapp
+        depends_on:
+            - postgres
+
+    # Postgres DB
+    postgres:
+        environment:
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: pass
+            POSTGRES_DB: personal-journal
+            POSTGRES_HOST: postgres
+        build: ./postgres
+        volumes:
+            - ./postgres/pgdata:/var/lib/postgresql/data
+        ports:
+            - '5431:5432'
+        networks:
+            - pernapp
+networks:
+    pernapp:
+        driver: bridge
+```
+
+Now lets build our containers by running the `docker-compose` command.
+
+```bash
+docker-compose build
+```
+
+The first time build will take a little time, then after it is build all we have
+to do is run the command `docker-compose up` and we will see our app on
+`localhost:3500`
+
+We have a problem, we are not able to display our posts. This is a simple fix.
+Let's go to our `app.js` in our client and fix it. When fetching data from our
+db it comes in an array. So our `postData` will need to be mapped to display the
+data.
+
+```jsx
+import React from 'react';
+import PostCard from './components/post-card';
+function App() {
+	const [postData, setPostData] = React.useState('');
+
+	React.useEffect(() => {
+		const getData = async () => {
+			const response = await fetch('http://backend:5000/posts');
+			const post = await response.json();
+
+			setPostData(post);
+		};
+		getData();
+	}, []);
+
+	return (
+		<div className='App'>
+			{postData !== ''
+				? postData.map((post) => {
+						return (
+							<div>
+								<h2>{post.title}</h2>
+								<p>{post.content}</p>
+							</div>
+						);
+				  })
+				: null}
+		</div>
+	);
+}
+
+export default App;
+```
+
+Now we should be able to retrieve our data and have it displayed on our React
+app. Now we have a full stack PERN app. It is just a shell of what it will
+become, but it is a good place to start. Later, I will work on finishing the
+app, and will share the journey with you guys. So until then, have a great day!

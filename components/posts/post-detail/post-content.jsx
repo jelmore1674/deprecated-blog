@@ -2,7 +2,6 @@ import PostHeader from './post-header';
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import classes from './post-content.module.css';
-import Paper from '@material-ui/core/Paper';
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import js from 'react-syntax-highlighter/dist/cjs/languages/prism/javascript';
@@ -85,11 +84,11 @@ export default function PostContent(props) {
 	};
 
 	return (
-		<Paper className={classes.content} elevation={3}>
+		<div className={classes.content}>
 			<PostHeader title={props.post.title} image={imagePath} />
 			<ReactMarkdown components={customRenderers}>
 				{props.post.content}
 			</ReactMarkdown>
-		</Paper>
+		</div>
 	);
 }

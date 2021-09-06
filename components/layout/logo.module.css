@@ -1,9 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
 .logo {
-    text-transform: uppercase;
-    font-size: var(--size-5);
+    text-transform: lowercase;
+    font-size: var(--size-6);
     font-weight: bold;
-    font-family: 'Oswald', sans-serif;
-    color: var(--color-grey-50);
+    font-family: 'Poppins', sans-serif;
+    color: white;
 }
 
 @media (min-width: 768px) {
