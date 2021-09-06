@@ -15,7 +15,7 @@ import yml from 'react-syntax-highlighter/dist/cjs/languages/prism/yaml';
 import sql from 'react-syntax-highlighter/dist/cjs/languages/prism/sql';
 import Link from 'next/link';
 import json from 'react-syntax-highlighter/dist/cjs/languages/prism/json';
-
+import code from 'react-syntax-highlighter/dist/cjs/languages/prism/';
 SyntaxHighlighter.registerLanguage('js', js);
 SyntaxHighlighter.registerLanguage('css', css);
 SyntaxHighlighter.registerLanguage('jsx', jsx);
@@ -68,21 +68,27 @@ export default function PostContent(props) {
 		},
 		code(code) {
 			const { className, children } = code;
-			const language = className.split('-')[1];
-			return (
-				<SyntaxHighlighter style={atomDark} language={language}>
-					{children}
-				</SyntaxHighlighter>
-			);
+			const language =
+				className != undefined ? className.split('-')[1] : 'code';
+
+			if (language === 'code') {
+				return <code className={classes.code}> {children}</code>;
+			} else {
+				return (
+					<SyntaxHighlighter style={atomDark} language={language}>
+						{children}
+					</SyntaxHighlighter>
+				);
+			}
 		},
 	};
 
 	return (
-		<article className={classes.content}>
+		<div className={classes.content}>
 			<PostHeader title={props.post.title} image={imagePath} />
 			<ReactMarkdown components={customRenderers}>
 				{props.post.content}
 			</ReactMarkdown>
-		</article>
+		</div>
 	);
 }
